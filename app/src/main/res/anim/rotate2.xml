@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rotate xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="1000"
+    android:fromDegrees="0"
+    android:pivotX="50%"
+    android:pivotY="50%"
+    android:toDegrees="359"
+    android:repeatCount="-1">
+    <!--android:pivotX="50%"表示旋转点x坐标相对自己这个view的一半
+    Y也是一样的，都设置为50%的话，就是绕中心点旋转
+    如果填写的是数字，不是百分比，那么指的是像素点-->
+</rotate>
