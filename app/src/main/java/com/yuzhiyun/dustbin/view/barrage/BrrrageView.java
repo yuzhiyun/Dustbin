@@ -53,8 +53,8 @@ public class BrrrageView extends BaseView {
             int r1=random.nextInt(TextData.colors.length);
             mTextColor=TextData.colors[r1];
 //            文字内容
-            int r2=random.nextInt(TextData.texts.length);
-            text=TextData.texts[r2];
+            int r2=random.nextInt(TextData.textFromJson.size());
+            text=TextData.textFromJson.get(r2);
 //            大小
             int r3=random.nextInt(20);
             r3+=40;

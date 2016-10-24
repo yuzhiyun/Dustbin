@@ -13,7 +13,8 @@ public class App  extends Application{
 
     public static RequestQueue requestQueue = null;
 
-    public static String ip = "10.96.76.2:8080";
+    public static String ip = "123.207.240.183:8080/barrage";
+//    public static String ip = "192.168.1.104:8080";
     public static RequestQueue getRequestQueue(Context context) {
         if (requestQueue == null)
             requestQueue = Volley.newRequestQueue(context);

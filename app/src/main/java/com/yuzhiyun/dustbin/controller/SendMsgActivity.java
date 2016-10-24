@@ -27,10 +27,14 @@ import com.android.volley.toolbox.StringRequest;
 import com.yuzhiyun.dustbin.R;
 import com.yuzhiyun.dustbin.controller.base.BaseActivity;
 import com.yuzhiyun.dustbin.model.Application.App;
+import com.yuzhiyun.dustbin.model.TextData;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -71,28 +75,32 @@ public class SendMsgActivity extends BaseActivity {
     @Override
     protected void initOther() {
         getSupportActionBar().setTitle("吐槽");
-        Animation animation=AnimationUtils.loadAnimation(context,R.anim.rotate);
+        Animation animation = AnimationUtils.loadAnimation(context, R.anim.rotate);
         //旋转匀速
         LinearInterpolator lir = new LinearInterpolator();
         animation.setInterpolator(lir);
         img.startAnimation(animation);
         imgHouse.startAnimation(animation);
 
-        Animation animation2=AnimationUtils.loadAnimation(context,R.anim.rotate);
+        Animation animation2 = AnimationUtils.loadAnimation(context, R.anim.rotate);
         animation2.setInterpolator(lir);
         imgCar.startAnimation(animation2);
         imgMoney.startAnimation(animation2);
     }
 
     @OnClick(R.id.btnSend)
-    public void btnSend(){
+    public void btnSend() {
 //        startActivity(new Intent(context,MainActivity.class));
-        save(urlSave);
+        if (etMsg.getText().toString().equals(""))
+            Toast.makeText(SendMsgActivity.this, "弹幕不能为空", Toast.LENGTH_SHORT).show();
+        else
+            save(urlSave);
     }
 
 
     /**
      * 发送弹幕给服务器
+     *
      * @param url
      */
     private void save(String url) {
@@ -107,19 +115,22 @@ public class SendMsgActivity extends BaseActivity {
                     public void onResponse(String s) {
                         progressDialog.dismiss();
 //                        Log.i("登录onResponse", s);
-                  if("success".equals(s))
-                      Toast.makeText(SendMsgActivity.this, "发送弹幕成功", Toast.LENGTH_SHORT).show();
+                        if ("success".equals(s)) {
+                            Toast.makeText(SendMsgActivity.this, "发送弹幕成功", Toast.LENGTH_SHORT).show();
 //                        弹出对话框询问是否进入小黑屋查看所有弹幕
-                        AlertDialog.Builder builder=new AlertDialog.Builder(context);
-                        builder.setMessage("进入小黑屋逛一逛");
-                        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                            builder.setMessage("进入小黑屋逛一逛");
+                            builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
 
-                                findAll(urlFindAll);
-                            }
-                        });
-                        builder.show();
+                                    findAll(urlFindAll);
+                                }
+                            });
+                            builder.show();
+                        } else {
+                            Toast.makeText(SendMsgActivity.this, "失败"+s, Toast.LENGTH_SHORT).show();
+                        }
 
                     }
                 },
@@ -127,7 +138,7 @@ public class SendMsgActivity extends BaseActivity {
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
                         progressDialog.dismiss();
-                        Toast.makeText(SendMsgActivity.this, "失败"+volleyError.toString(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SendMsgActivity.this, "失败" + volleyError.toString(), Toast.LENGTH_SHORT).show();
 
                     }
                 }) {
@@ -143,7 +154,8 @@ public class SendMsgActivity extends BaseActivity {
     }
 
     /**
-     *获取所有弹幕
+     * 获取所有弹幕
+     *
      * @param url
      */
     private void findAll(String url) {
@@ -158,15 +170,29 @@ public class SendMsgActivity extends BaseActivity {
                     public void onResponse(String s) {
                         progressDialog.dismiss();
 //                        Log.i("登录onResponse", s);
-                            Toast.makeText(SendMsgActivity.this, "成功获取弹幕"+s, Toast.LENGTH_SHORT).show();
+                        try {
+
+                            JSONArray jsonArray = new JSONArray( URLDecoder.decode(s,"utf-8"));
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                Log.i("json", jsonArray.getString(i));
+                                TextData.textFromJson.add(jsonArray.getString(i));
+                            }
+                            if (TextData.textFromJson.size() != 0)
+                                startActivity(new Intent(context, MainActivity.class));
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
+//                        Toast.makeText(SendMsgActivity.this, "成功获取弹幕"+s, Toast.LENGTH_SHORT).show();
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
                         progressDialog.dismiss();
-                        Toast.makeText(SendMsgActivity.this, "失败"+volleyError.toString(), Toast.LENGTH_SHORT).show();
-
+                        Toast.makeText(SendMsgActivity.this, "失败" + volleyError.toString(), Toast.LENGTH_SHORT).show();
                     }
                 }) {
             @Override
